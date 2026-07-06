@@ -29,7 +29,7 @@ jobs:
     - name: 📝 Generate Swagger Documentation
       run: |
         echo "Generating OpenAPI/Swagger specs..."
-        swag init -g cmd/gateway/main.go -o cmd/gateway/docs
+        cd cmd/gateway && swag init -g main.go -d .,../../srv/transactions/handlers,../../srv/users/handlers -o ../../docs --parseDependency --parseInternal
 
     - name: 🧪 Run Unit Tests
       run: |
