@@ -74,5 +74,5 @@ jobs:
       uses: actions/checkout@v4
     - name: 🐳 Docker Compose Validate (Optional)
       run: |
-        echo "Validating docker-compose setup..."
-        docker-compose config
+        echo "Validating docker compose setup..."
+        docker compose config
