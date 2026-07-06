@@ -4,6 +4,23 @@ Este repositorio contiene la solución completa para el reto técnico de procesa
 
 ---
 
+## 🎯 El Reto (Reglas de Negocio)
+
+Este proyecto da solución al desafío de diseñar una API REST que gestiona la ejecución de transacciones financieras (crédito y débito) delegando el control de balances y bloqueos a un proveedor externo. 
+
+### Reglas de Negocio Implementadas
+Antes de llamar al proveedor externo, el microservicio procesa y valida estrictamente:
+1. **Monto Mínimo:** Toda transacción debe ser estrictamente mayor a `$1.00`.
+2. **Monto Máximo (Débito):** Las transacciones de retiro o débito (`DEBIT`) tienen un límite máximo de `$10,000.00` por operación. Las operaciones de crédito (`CREDIT`) no tienen límite.
+3. **Moneda Soportada:** Únicamente se aceptan transacciones en Pesos Mexicanos (`MXN`).
+
+### Requerimientos Cumplidos
+- **Persistencia (PostgreSQL):** Se seleccionó un motor relacional (SQL) con cifrado en reposo para garantizar la integridad, consistencia (ACID) y seguridad requerida en un entorno financiero.
+- **Tolerancia a Fallos (Resiliencia):** Se desacopló la comunicación con el proveedor. Ante un error `5xx` o timeout del proveedor, la transacción queda guardada en estado `PENDING` y un Worker asíncrono (`Cron Reconciliator`) la reintenta automáticamente.
+- **Testing Exhaustivo:** Se superó la expectativa base al entregar pruebas unitarias (Table-Driven) con un **coverage del core de >95%**, además de 14 escenarios de pruebas End-to-End con inyección de fallos al Mock del proveedor.
+
+---
+
 ## 🏗️ Arquitectura del Sistema
 
 El sistema está diseñado bajo los principios de **Clean Architecture** (Arquitectura Hexagonal) y segregación de responsabilidades. Para desarrollo local se orquesta en Docker, implementando una topología modular de alto rendimiento:
