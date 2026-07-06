@@ -187,22 +187,35 @@ Apaga los contenedores y destruye los volúmenes de datos persistidos para inici
 task reset
 ```
 
-### Ejecutar CI / Pruebas Unitarias
-El proyecto contiene pruebas exhaustivas bajo el formato "Table-Driven Tests". Para ejecutarlas todas y generar el reporte en `docs/`:
+### 🧪 Reportes y Ejecución de Pruebas
+
+El proyecto cuenta con un conjunto extenso de pruebas (Unitarias y E2E). Al ejecutarlas mediante el **Taskfile**, los resultados se guardan automáticamente en archivos de texto dentro del directorio `docs/` para facilitar su revisión o auditoría:
+
+#### 1. Pruebas Unitarias ("Table-Driven Tests")
+Para ejecutar los cientos de casos de uso cubiertos (incluyendo escenarios positivos y negativos) y generar el reporte de consola en un archivo:
 ```bash
 task test
 ```
+* Genera el fichero: `docs/UNIT_TEST_RESULTS.txt`
 
-> **Cobertura Actual (Test Coverage):**
-> * **Cobertura General de Código:** **>81%** (`81.2%`)
-> * **Cobertura de la Capa de Negocio Core (`usecases`, `repositories`, `handlers`, `pkg`, `opt`):** **~95-100%** 
-> *(La mayor parte del código productivo está completamente testeado utilizando "Table-Driven Tests" y mocks completos. El porcentaje global de 81.2% se debe a que la métrica incluye los binarios de entrada en `cmd/` que son exclusivos de infraestructura).*
+#### 2. Reporte de Cobertura (Coverage)
+Para ejecutar los tests calculando la cobertura del código y generar un reporte detallado paquete por paquete:
+```bash
+task test-coverage
+```
+* Genera el fichero: `docs/COVERAGE_REPORT.txt`
 
-### Ejecutar Pruebas E2E (cURL Script)
-Para probar la API de forma automatizada simulando tráfico real y mocks de fallo:
+> **Cobertura Actual:**
+> * **General:** **>81%** (`81.2%`)
+> * **Capa de Negocio Core (`usecases`, `repositories`, `handlers`, `pkg`, `opt`):** **~95-100%** 
+> *(El porcentaje global se ve reducido únicamente por los ejecutables `main` en `cmd/` que son de infraestructura).*
+
+#### 3. Pruebas End-to-End (E2E) con cURL
+Existe un script (`scripts/test_api.sh`) que simula peticiones reales, incluyendo casos de éxito, paginación, filtros combinados, inyección de fallos (Mock Errors 500) y rechazos por límite de fondos. Para ejecutarlo automatizadamente:
 ```bash
 task test-api
 ```
+* Genera el fichero: `docs/E2E_TEST_RESULTS.txt`
 *(El proyecto incluye además un Pipeline de GitHub Actions automatizado que primero valida el coverage de los tests y luego, en paralelo, genera los specs de Swagger, compila los microservicios y valida la infraestructura).*
 
 ---
