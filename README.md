@@ -216,6 +216,11 @@ Existe un script (`scripts/test_api.sh`) que simula peticiones reales, incluyend
 task test-api
 ```
 * Genera el fichero: `docs/E2E_TEST_RESULTS.txt`
+
+#### 4. Postman Collection
+Para probar la API de forma visual y manual, hemos generado una colección lista para importar en Postman.
+* Encuentra el fichero en: `docs/Bank_API_Postman_Collection.json`
+*(La colección incluye scripts automáticos que guardan el JWT de la respuesta de Signup/Login y lo inyectan en el resto de los requests).*
 *(El proyecto incluye además un Pipeline de GitHub Actions automatizado que primero valida el coverage de los tests y luego, en paralelo, genera los specs de Swagger, compila los microservicios y valida la infraestructura).*
 
 ---
