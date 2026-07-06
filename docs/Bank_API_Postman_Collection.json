@@ -38,14 +38,16 @@
 							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"test@example.com\",\n  \"password\": \"secret123\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/users/signup",
+							"raw": "http://localhost:8000/api/v1/auth/signup",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
-								"users",
+								"api",
+								"v1",
+								"auth",
 								"signup"
 							]
 						}
@@ -80,14 +82,16 @@
 							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"secret123\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/users/login",
+							"raw": "http://localhost:8000/api/v1/auth/login",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
-								"users",
+								"api",
+								"v1",
+								"auth",
 								"login"
 							]
 						}
@@ -104,13 +108,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/users/me",
+							"raw": "http://localhost:8000/api/v1/users/me",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"users",
 								"me"
 							]
@@ -145,13 +151,15 @@
 							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 1500.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Transferencia recibida (Éxito)\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/transactions",
+							"raw": "http://localhost:8000/api/v1/transactions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							]
 						}
@@ -184,13 +192,15 @@
 							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"DEBIT\",\n  \"amount\": 50000.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Compra de auto de lujo (Rechazada)\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/transactions",
+							"raw": "http://localhost:8000/api/v1/transactions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							]
 						}
@@ -223,13 +233,15 @@
 							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 100.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Prueba de crash del proveedor\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/transactions",
+							"raw": "http://localhost:8000/api/v1/transactions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							]
 						}
@@ -262,13 +274,15 @@
 							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 250.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Prueba de header inválido\"\n}"
 						},
 						"url": {
-							"raw": "http://localhost:8000/transactions",
+							"raw": "http://localhost:8000/api/v1/transactions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							]
 						}
@@ -290,13 +304,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions",
+							"raw": "http://localhost:8000/api/v1/transactions",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							]
 						}
@@ -313,13 +329,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?accountId=acc-123456",
+							"raw": "http://localhost:8000/api/v1/transactions?accountId=acc-123456",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -342,13 +360,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?status=EXECUTED",
+							"raw": "http://localhost:8000/api/v1/transactions?status=EXECUTED",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -371,13 +391,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?type=CREDIT",
+							"raw": "http://localhost:8000/api/v1/transactions?type=CREDIT",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -400,13 +422,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?page=1&limit=5",
+							"raw": "http://localhost:8000/api/v1/transactions?page=1&limit=5",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -433,13 +457,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?accountId=acc-123456&status=EXECUTED&type=CREDIT&page=1&limit=10",
+							"raw": "http://localhost:8000/api/v1/transactions?accountId=acc-123456&status=EXECUTED&type=CREDIT&page=1&limit=10",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -482,13 +508,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?accountId=acc-123456",
+							"raw": "http://localhost:8000/api/v1/transactions?accountId=acc-123456",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -511,13 +539,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?page=abc",
+							"raw": "http://localhost:8000/api/v1/transactions?page=abc",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -540,13 +570,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?limit=xyz",
+							"raw": "http://localhost:8000/api/v1/transactions?limit=xyz",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
@@ -569,13 +601,15 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?accountId=acc-empty-123456",
+							"raw": "http://localhost:8000/api/v1/transactions?accountId=acc-empty-123456",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
 							"port": "8000",
 							"path": [
+								"api",
+								"v1",
 								"transactions"
 							],
 							"query": [
