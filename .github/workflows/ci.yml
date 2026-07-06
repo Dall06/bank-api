@@ -7,35 +7,56 @@ on:
     branches: [ "main", "develop" ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-    
     steps:
     - name: 🚀 Checkout Repository
       uses: actions/checkout@v4
-
     - name: 🐹 Set up Go
       uses: actions/setup-go@v5
       with:
         go-version: '1.25'
         cache: true
-
     - name: 📦 Download Dependencies
       run: go mod download
-
-    - name: 📚 Install Swagger CLI
-      run: go install github.com/swaggo/swag/cmd/swag@latest
-
-    - name: 📝 Generate Swagger Documentation
-      run: |
-        echo "Generating OpenAPI/Swagger specs..."
-        cd cmd/gateway && swag init -g main.go -d .,../../srv/transactions/handlers,../../srv/users/handlers -o ../../docs --parseDependency --parseInternal
-
     - name: 🧪 Run Unit Tests
       run: |
         echo "Running all unit tests..."
         go test -v -cover ./...
 
+  swagger:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: 🚀 Checkout Repository
+      uses: actions/checkout@v4
+    - name: 🐹 Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25'
+        cache: true
+    - name: 📦 Download Dependencies
+      run: go mod download
+    - name: 📚 Install Swagger CLI
+      run: go install github.com/swaggo/swag/cmd/swag@latest
+    - name: 📝 Generate Swagger Documentation
+      run: |
+        echo "Generating OpenAPI/Swagger specs..."
+        cd cmd/gateway && swag init -g main.go -d .,../../srv/transactions/handlers,../../srv/users/handlers -o ../../docs --parseDependency --parseInternal
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: 🚀 Checkout Repository
+      uses: actions/checkout@v4
+    - name: 🐹 Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25'
+        cache: true
+    - name: 📦 Download Dependencies
+      run: go mod download
     - name: 🔨 Build Microservices
       run: |
         echo "Building Go binaries for all services..."
@@ -45,6 +66,12 @@ jobs:
         go build -o bin/crons ./cmd/crons
         go build -o bin/provider-mock ./cmd/provider_mock
 
+  docker-validate:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: 🚀 Checkout Repository
+      uses: actions/checkout@v4
     - name: 🐳 Docker Compose Validate (Optional)
       run: |
         echo "Validating docker-compose setup..."
