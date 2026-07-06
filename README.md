@@ -194,16 +194,16 @@ task test
 ```
 
 > **Cobertura Actual (Test Coverage):**
-> * **Cobertura General de Código:** ~40% (`39.3%`)
-> * **Cobertura de la Capa de Negocio Core (`usecases`):** **~88%** 
-> *(Los casos de uso de Transacciones, Usuarios, Crons y Mocks están ampliamente cubiertos para asegurar la integridad transaccional).*
+> * **Cobertura General de Código:** **>81%** (`81.2%`)
+> * **Cobertura de la Capa de Negocio Core (`usecases`, `repositories`, `handlers`, `pkg`, `opt`):** **~95-100%** 
+> *(La mayor parte del código productivo está completamente testeado utilizando "Table-Driven Tests" y mocks completos. El porcentaje global de 81.2% se debe a que la métrica incluye los binarios de entrada en `cmd/` que son exclusivos de infraestructura).*
 
 ### Ejecutar Pruebas E2E (cURL Script)
 Para probar la API de forma automatizada simulando tráfico real y mocks de fallo:
 ```bash
 task test-api
 ```
-*(El proyecto incluye además un Pipeline de GitHub Actions automatizado que corre el linter y los tests en cada PR).*
+*(El proyecto incluye además un Pipeline de GitHub Actions automatizado que primero valida el coverage de los tests y luego, en paralelo, genera los specs de Swagger, compila los microservicios y valida la infraestructura).*
 
 ---
 
