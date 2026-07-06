@@ -2,15 +2,15 @@
 	"info": {
 		"_postman_id": "b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1",
 		"name": "Bank API - Spin Backend Challenge",
-		"description": "Colección completa para probar el API del reto técnico de procesamiento de transacciones.",
+		"description": "Colección completa para probar el API del reto técnico de procesamiento de transacciones, con todos los casos de éxito y errores.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Users",
+			"name": "1. Autenticación (Users)",
 			"item": [
 				{
-					"name": "1. Signup (Register)",
+					"name": "Signup (Register)",
 					"event": [
 						{
 							"listen": "test",
@@ -52,7 +52,7 @@
 					}
 				},
 				{
-					"name": "2. Login",
+					"name": "Login",
 					"event": [
 						{
 							"listen": "test",
@@ -94,7 +94,7 @@
 					}
 				},
 				{
-					"name": "3. Get My Profile",
+					"name": "Get My Profile",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -120,10 +120,10 @@
 			]
 		},
 		{
-			"name": "Transactions",
+			"name": "2. Crear Transacciones (POST)",
 			"item": [
 				{
-					"name": "1. Create Transaction (Credit)",
+					"name": "Prueba 1: Caso de Éxito (Transacción Aprobada)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -142,7 +142,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 1500.00\n}"
+							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 1500.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Transferencia recibida (Éxito)\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:8000/transactions",
@@ -158,42 +158,7 @@
 					}
 				},
 				{
-					"name": "2. Create Transaction (Debit)",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "Bearer {{jwt_token}}"
-							},
-							{
-								"key": "X-Idempotency-Key",
-								"value": "{{$guid}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"DEBIT\",\n  \"amount\": 500.00\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8000/transactions",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8000",
-							"path": [
-								"transactions"
-							]
-						}
-					}
-				},
-				{
-					"name": "3. Create Transaction (Mock Error 500)",
+					"name": "Prueba 2: Simulación de Fondos Insuficientes (X-Mock-Id)",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -207,12 +172,16 @@
 							},
 							{
 								"key": "X-Mock-Id",
-								"value": "crash"
+								"value": "id-insufficient-funds"
+							},
+							{
+								"key": "X-Idempotency-Key",
+								"value": "{{$guid}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 100.00\n}"
+							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"DEBIT\",\n  \"amount\": 50000.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Compra de auto de lujo (Rechazada)\"\n}"
 						},
 						"url": {
 							"raw": "http://localhost:8000/transactions",
@@ -228,7 +197,90 @@
 					}
 				},
 				{
-					"name": "4. Get All Transactions",
+					"name": "Prueba 3: Simulación de Caída del Proveedor 500",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "X-Mock-Id",
+								"value": "id-error-500"
+							},
+							{
+								"key": "X-Idempotency-Key",
+								"value": "{{$guid}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 100.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Prueba de crash del proveedor\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 4: Simulación de Mock ID Desconocido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "X-Mock-Id",
+								"value": "id-desconocido"
+							},
+							{
+								"key": "X-Idempotency-Key",
+								"value": "{{$guid}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accountId\": \"acc-123456\",\n  \"type\": \"CREDIT\",\n  \"amount\": 250.00,\n  \"currency\": \"MXN\",\n  \"description\": \"Prueba de header inválido\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Consultar Transacciones (GET)",
+			"item": [
+				{
+					"name": "Prueba 5: GET /transactions sin filtros",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -251,7 +303,7 @@
 					}
 				},
 				{
-					"name": "5. Get Transactions (Pagination & Filters)",
+					"name": "Prueba 6: GET filtrado por accountId",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -261,7 +313,94 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8000/transactions?page=1&limit=5&type=CREDIT",
+							"raw": "http://localhost:8000/transactions?accountId=acc-123456",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "acc-123456"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 7: GET filtrado por status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?status=EXECUTED",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "EXECUTED"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 8: GET filtrado por type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?type=CREDIT",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "CREDIT"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 9: GET con paginación",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?page=1&limit=5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -278,10 +417,171 @@
 								{
 									"key": "limit",
 									"value": "5"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 10: GET con todos los filtros combinados",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?accountId=acc-123456&status=EXECUTED&type=CREDIT&page=1&limit=10",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "acc-123456"
+								},
+								{
+									"key": "status",
+									"value": "EXECUTED"
 								},
 								{
 									"key": "type",
 									"value": "CREDIT"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 11: GET con Cache-Control: no-cache",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "no-cache"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?accountId=acc-123456",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "acc-123456"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 12: GET con page inválido (Error 400)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?page=abc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "abc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 13: GET con limit inválido (Error 400)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?limit=xyz",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "xyz"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Prueba 14: GET cuenta sin transacciones (Array Vacío)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8000/transactions?accountId=acc-empty-123456",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "acc-empty-123456"
 								}
 							]
 						}
