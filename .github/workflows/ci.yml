@@ -1,0 +1,51 @@
+name: CI/CD Pipeline (Demo)
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🚀 Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: 🐹 Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.25'
+        cache: true
+
+    - name: 📦 Download Dependencies
+      run: go mod download
+
+    - name: 📚 Install Swagger CLI
+      run: go install github.com/swaggo/swag/cmd/swag@latest
+
+    - name: 📝 Generate Swagger Documentation
+      run: |
+        echo "Generating OpenAPI/Swagger specs..."
+        swag init -g cmd/gateway/main.go -o cmd/gateway/docs
+
+    - name: 🧪 Run Unit Tests
+      run: |
+        echo "Running all unit tests..."
+        go test -v -cover ./...
+
+    - name: 🔨 Build Microservices
+      run: |
+        echo "Building Go binaries for all services..."
+        go build -o bin/gateway ./cmd/gateway
+        go build -o bin/users ./cmd/users
+        go build -o bin/transactions ./cmd/transactions
+        go build -o bin/crons ./cmd/crons
+        go build -o bin/provider-mock ./cmd/provider_mock
+
+    - name: 🐳 Docker Compose Validate (Optional)
+      run: |
+        echo "Validating docker-compose setup..."
+        docker-compose config

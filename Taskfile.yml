@@ -1,0 +1,84 @@
+# =============================================================================
+# Bank API - Task Runner
+# =============================================================================
+version: '3'
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list
+
+  up:
+    desc: Start all services in background (docker-compose)
+    cmds:
+      - docker-compose up -d --build
+      - echo "=========================================================="
+      - echo "  Bank API Local Development Environment"
+      - echo "=========================================================="
+      - 'echo "  Gateway:        http://localhost:8000"'
+      - 'echo "  Users API:      http://localhost:8081"'
+      - 'echo "  Transactions:   http://localhost:8082"'
+      - 'echo "  Provider Mock:  http://localhost:8083"'
+      - 'echo "  Postgres DB:    localhost:5432"'
+      - 'echo "=========================================================="'
+      - docker-compose ps
+
+  down:
+    desc: Stop all running services (docker-compose)
+    cmds:
+      - docker-compose down
+
+  restart:
+    desc: Restart a specific service (usage task restart srv=<service_name>)
+    cmds:
+      - docker-compose restart {{.srv}}
+    vars:
+      srv: '{{.srv | default ""}}'
+
+  logs:
+    desc: View logs for all or a specific service (usage task logs srv=<service_name>)
+    cmds:
+      - docker-compose logs -f {{.srv}}
+    vars:
+      srv: '{{.srv | default ""}}'
+
+  ps:
+    desc: Show running services status
+    cmds:
+      - docker-compose ps
+
+  build:
+    desc: Build all services locally (compile binaries)
+    cmds:
+      - go build ./...
+
+  test:
+    desc: Run unit tests for all services and save results to docs/
+    cmds:
+      - go test ./... -v | tee docs/UNIT_TEST_RESULTS.txt
+
+  test-coverage:
+    desc: Run unit tests with coverage and generate docs/COVERAGE_REPORT.txt
+    cmds:
+      - go test ./... -coverprofile=coverage.out
+      - go tool cover -func=coverage.out | tee docs/COVERAGE_REPORT.txt
+      - echo "✅ Reporte de cobertura guardado en docs/COVERAGE_REPORT.txt"
+
+  reset:
+    desc: Full wipe of docker volumes (DB data reset) and containers
+    cmds:
+      - docker-compose down --volumes --remove-orphans
+      - echo "Database and containers wiped clean. Run 'task up' to start fresh."
+
+  test-api:
+    desc: Run end-to-end curl tests against the local environment and save results to docs/
+    cmds:
+      - bash scripts/test_api.sh | tee docs/E2E_TEST_RESULTS.txt
+
+  swagger:
+    desc: Generate Swagger documentation in the root docs/ folder and rebuild gateway
+    cmds:
+      - cd cmd/gateway && go run github.com/swaggo/swag/cmd/swag@latest init -g main.go -d .,../../srv/transactions/handlers,../../srv/users/handlers -o ../../docs --parseDependency --parseInternal
+      - docker-compose up -d --build gateway
+      - echo "✅ Swagger docs updated in docs/ folder! Visit http://localhost:8000/swagger/index.html"

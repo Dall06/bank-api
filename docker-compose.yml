@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # Infrastructure
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: bank-postgres
+    environment:
+      POSTGRES_USER: base_user
+      POSTGRES_PASSWORD: base_password
+      POSTGRES_DB: base_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U base_user -d base_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bank-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: bank-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - bank-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: bank-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    networks:
+      - bank-network
+
+
+
+  # ============================================================================
+  # Mocks
+  # ============================================================================
+  provider-mock:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: provider_mock
+    container_name: bank-provider-mock
+    environment:
+      PORT: 8083
+      ENV: development
+    ports:
+      - "8083:8083"
+    networks:
+      - bank-network
+
+  # ============================================================================
+  # Services
+  # ============================================================================
+  users:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: users
+    container_name: bank-users
+    environment:
+      PORT: 8081
+      ENV: development
+      DATABASE_URL: postgres://base_user:base_password@postgres:5432/base_db?sslmode=disable
+      JWT_SECRET: super-secret-key-change-me
+      SIGIL_SECRET: super-secret-sigil-key
+      ALLOWED_SERVICES: gateway,transactions
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bank-network
+
+  transactions:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: transactions
+    container_name: bank-transactions
+    environment:
+      PORT: 8082
+      ENV: development
+      REDIS_URL: redis:6379
+      KAFKA_BROKERS: kafka:9092
+      DATABASE_URL: postgres://base_user:base_password@postgres:5432/base_db?sslmode=disable
+      JWT_SECRET: super-secret-key-change-me
+      SIGIL_SECRET: super-secret-sigil-key
+      ALLOWED_SERVICES: gateway,crons
+      USERS_INTERNAL_URL: http://users:8081/internal/users
+      PROVIDER_EXECUTE_URL: http://provider-mock:8083/provider/v1/execute
+      AUTH_REQUIRED: "false"
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      provider-mock:
+        condition: service_started
+    networks:
+      - bank-network
+
+  crons:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: crons
+    container_name: bank-crons
+    environment:
+      ENV: development
+      SIGIL_SECRET: super-secret-sigil-key
+      TRANSACTIONS_INTERNAL_URL: http://transactions:8082/internal/transactions
+      PROVIDER_EXECUTE_URL: http://provider-mock:8083/provider/v1/execute
+    depends_on:
+      transactions:
+        condition: service_started
+    networks:
+      - bank-network
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        SERVICE: gateway
+    container_name: bank-gateway
+    environment:
+      PORT: 8080
+      ENV: development
+      JWT_SECRET: super-secret-key-change-me
+      SIGIL_SECRET: super-secret-sigil-key
+      USERS_URL: http://users:8081
+      TRANSACTIONS_URL: http://transactions:8082
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+    ports:
+      - "8000:8080"
+    depends_on:
+      users:
+        condition: service_started
+      transactions:
+        condition: service_started
+    networks:
+      - bank-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  bank-network:
+    name: bank-network

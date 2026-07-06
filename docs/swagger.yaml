@@ -1,0 +1,205 @@
+basePath: /api/v1
+definitions:
+  domain.AuthResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/domain.User'
+    type: object
+  domain.CreateTransactionRequest:
+    properties:
+      accountId:
+        type: string
+      amount:
+        type: number
+      currency:
+        type: string
+      description:
+        type: string
+      type:
+        type: string
+    required:
+    - accountId
+    - amount
+    - currency
+    - type
+    type: object
+  domain.GetTransactionsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.TransactionResponse'
+        type: array
+      pagination:
+        $ref: '#/definitions/domain.PaginationMeta'
+    type: object
+  domain.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  domain.PaginationMeta:
+    properties:
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
+  domain.SignupRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  domain.TransactionResponse:
+    properties:
+      accountId:
+        type: string
+      amount:
+        type: number
+      balanceAfter:
+        type: number
+      createdAt:
+        type: string
+      currency:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      providerTransactionId:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
+  domain.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: API for the Bank System using Hexagonal Architecture.
+  title: Bank API Monorepo
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user and returns a JWT token.
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.AuthResponse'
+      summary: Authenticate user
+      tags:
+      - Users
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account.
+      parameters:
+      - description: Signup request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.AuthResponse'
+      summary: Register a new user
+      tags:
+      - Users
+  /transactions:
+    get:
+      description: Retrieves paginated transactions, optionally filtered by accountId.
+      parameters:
+      - description: Account ID to filter by
+        in: query
+        name: accountId
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetTransactionsResponse'
+      summary: Get transactions
+      tags:
+      - Transactions
+    post:
+      consumes:
+      - application/json
+      description: Creates a new credit or debit transaction. Supports Idempotency
+        via X-Idempotency-Key.
+      parameters:
+      - description: Transaction request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateTransactionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.TransactionResponse'
+      summary: Create a new transaction
+      tags:
+      - Transactions
+swagger: "2.0"

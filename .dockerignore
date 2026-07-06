@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# Go
+vendor/
+.go/
+*.test
+*.prof
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Build artifacts
+dist/
+bin/
+
+# Envs
+.env
+
+# Tests and coverage
+coverage.out
+coverage.html
+
+# Mocks and temp files
+tmp/
+*.log

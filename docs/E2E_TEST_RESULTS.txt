@@ -1,0 +1,235 @@
+==========================================================
+ Ejecutando Pruebas End-to-End del API de Transacciones
+==========================================================
+
+➡️  Prueba 1: Caso de Éxito (Transacción Aprobada)
+HTTP/1.1 201 Created
+Content-Length: 285
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:23 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 65c1fb26-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 65c1fb21-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604219Z"}
+
+
+
+➡️  Prueba 2: Simulación de Fondos Insuficientes (X-Mock-Id: id-insufficient-funds)
+HTTP/1.1 400 Bad Request
+Content-Length: 60
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:23 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 65c5ef4c-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 65c5ef47-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"error":"debit transaction amount cannot exceed 10000.00"}
+
+
+
+➡️  Prueba 3: Simulación de Caída del Proveedor (X-Mock-Id: id-error-500)
+HTTP/1.1 503 Service Unavailable
+Content-Length: 27
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 65c86e2a-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 65c86e26-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"error":"internal error"}
+
+
+
+➡️  Prueba 4: Simulación de Mock ID Desconocido (X-Mock-Id: id-desconocido)
+HTTP/1.1 201 Created
+Content-Length: 225
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66a653a4-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66a65394-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"id":"e15afc5f-3ff9-45a1-a55b-ef2ea3b2075a","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T06:03:25.434009303Z"}
+
+
+
+==========================================================
+ Consulta de Transacciones (GET /transactions)
+==========================================================
+
+➡️  Prueba 5: GET /transactions sin filtros (paginación por defecto)
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66a86865-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66a8685f-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+Transfer-Encoding: chunked
+
+{"data":[{"id":"e15afc5f-3ff9-45a1-a55b-ef2ea3b2075a","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T06:03:25.434009Z"},{"id":"7fb3fa11-83b6-458c-b13a-09628a4945c1","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T06:03:23.979651Z"},{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"56746362-1ee1-4fe7-9b93-8859d467fee8","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T04:31:38.539822Z"},{"id":"cc6918c3-3d26-452c-9828-f3c6de657211","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T04:31:37.095161Z"},{"id":"92a5d726-6f58-43d1-8577-df8c2ca45bbd","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T04:31:37.04968Z"},{"id":"8c481d2a-fb4c-44a4-9047-b53551bd8017","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:30:01.751578Z"},{"id":"c7c0a086-b7a9-4b6d-9895-e598da77b7b9","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:29:37.934636Z"},{"id":"377b89fa-7e1a-4606-a511-316925d1a0a4","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:25:09.382661Z"},{"id":"f477f407-5df9-4136-a361-5792d26332d1","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:24:43.749012Z"}],"pagination":{"page":1,"limit":10,"total":10}}
+
+
+
+➡️  Prueba 6: GET /transactions filtrado por accountId
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66ab29fe-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66ab29f7-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+Transfer-Encoding: chunked
+
+{"data":[{"id":"e15afc5f-3ff9-45a1-a55b-ef2ea3b2075a","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T06:03:25.434009Z"},{"id":"7fb3fa11-83b6-458c-b13a-09628a4945c1","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T06:03:23.979651Z"},{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"56746362-1ee1-4fe7-9b93-8859d467fee8","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T04:31:38.539822Z"},{"id":"cc6918c3-3d26-452c-9828-f3c6de657211","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T04:31:37.095161Z"},{"id":"92a5d726-6f58-43d1-8577-df8c2ca45bbd","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T04:31:37.04968Z"},{"id":"8c481d2a-fb4c-44a4-9047-b53551bd8017","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:30:01.751578Z"},{"id":"c7c0a086-b7a9-4b6d-9895-e598da77b7b9","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:29:37.934636Z"},{"id":"377b89fa-7e1a-4606-a511-316925d1a0a4","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:25:09.382661Z"},{"id":"f477f407-5df9-4136-a361-5792d26332d1","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:24:43.749012Z"}],"pagination":{"page":1,"limit":10,"total":10}}
+
+
+
+➡️  Prueba 7: GET /transactions filtrado por status=EXECUTED
+HTTP/1.1 200 OK
+Content-Length: 1165
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66ad40b7-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66ad40b0-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"data":[{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"92a5d726-6f58-43d1-8577-df8c2ca45bbd","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T04:31:37.04968Z"},{"id":"377b89fa-7e1a-4606-a511-316925d1a0a4","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:25:09.382661Z"},{"id":"f477f407-5df9-4136-a361-5792d26332d1","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:24:43.749012Z"}],"pagination":{"page":1,"limit":10,"total":4}}
+
+
+
+➡️  Prueba 8: GET /transactions filtrado por type=CREDIT
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66aef906-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66aef901-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+Transfer-Encoding: chunked
+
+{"data":[{"id":"e15afc5f-3ff9-45a1-a55b-ef2ea3b2075a","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T06:03:25.434009Z"},{"id":"7fb3fa11-83b6-458c-b13a-09628a4945c1","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T06:03:23.979651Z"},{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"56746362-1ee1-4fe7-9b93-8859d467fee8","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T04:31:38.539822Z"},{"id":"cc6918c3-3d26-452c-9828-f3c6de657211","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T04:31:37.095161Z"},{"id":"92a5d726-6f58-43d1-8577-df8c2ca45bbd","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T04:31:37.04968Z"},{"id":"8c481d2a-fb4c-44a4-9047-b53551bd8017","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:30:01.751578Z"},{"id":"c7c0a086-b7a9-4b6d-9895-e598da77b7b9","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:29:37.934636Z"},{"id":"377b89fa-7e1a-4606-a511-316925d1a0a4","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:25:09.382661Z"},{"id":"f477f407-5df9-4136-a361-5792d26332d1","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:24:43.749012Z"}],"pagination":{"page":1,"limit":10,"total":10}}
+
+
+
+➡️  Prueba 9: GET /transactions con paginación (page=1, limit=5)
+HTTP/1.1 200 OK
+Content-Length: 1228
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66b0cc54-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66b0cc49-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"data":[{"id":"e15afc5f-3ff9-45a1-a55b-ef2ea3b2075a","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T06:03:25.434009Z"},{"id":"7fb3fa11-83b6-458c-b13a-09628a4945c1","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T06:03:23.979651Z"},{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"56746362-1ee1-4fe7-9b93-8859d467fee8","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T04:31:38.539822Z"},{"id":"cc6918c3-3d26-452c-9828-f3c6de657211","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T04:31:37.095161Z"}],"pagination":{"page":1,"limit":5,"total":10}}
+
+
+
+➡️  Prueba 10: GET /transactions con todos los filtros combinados
+HTTP/1.1 200 OK
+Content-Length: 1165
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66b4b487-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66b4b474-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"data":[{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"92a5d726-6f58-43d1-8577-df8c2ca45bbd","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T04:31:37.04968Z"},{"id":"377b89fa-7e1a-4606-a511-316925d1a0a4","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:25:09.382661Z"},{"id":"f477f407-5df9-4136-a361-5792d26332d1","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:24:43.749012Z"}],"pagination":{"page":1,"limit":10,"total":4}}
+
+
+
+➡️  Prueba 11: GET /transactions con Cache-Control: no-cache (bypass caché)
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66b6fc69-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66b6fc62-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+Transfer-Encoding: chunked
+
+{"data":[{"id":"e15afc5f-3ff9-45a1-a55b-ef2ea3b2075a","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T06:03:25.434009Z"},{"id":"7fb3fa11-83b6-458c-b13a-09628a4945c1","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T06:03:23.979651Z"},{"id":"f976f31c-f09f-479a-8b32-7a5b6b8e3246","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T06:03:23.940604Z"},{"id":"56746362-1ee1-4fe7-9b93-8859d467fee8","accountId":"acc-123456","type":"CREDIT","amount":250,"currency":"MXN","description":"Prueba de header inválido","status":"REJECTED","createdAt":"2026-07-06T04:31:38.539822Z"},{"id":"cc6918c3-3d26-452c-9828-f3c6de657211","accountId":"acc-123456","type":"CREDIT","amount":100,"currency":"MXN","description":"Prueba de crash del proveedor","status":"FAILED","createdAt":"2026-07-06T04:31:37.095161Z"},{"id":"92a5d726-6f58-43d1-8577-df8c2ca45bbd","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida (Éxito)","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T04:31:37.04968Z"},{"id":"8c481d2a-fb4c-44a4-9047-b53551bd8017","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:30:01.751578Z"},{"id":"c7c0a086-b7a9-4b6d-9895-e598da77b7b9","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"REJECTED","createdAt":"2026-07-06T03:29:37.934636Z"},{"id":"377b89fa-7e1a-4606-a511-316925d1a0a4","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:25:09.382661Z"},{"id":"f477f407-5df9-4136-a361-5792d26332d1","accountId":"acc-123456","type":"CREDIT","amount":1500,"currency":"MXN","description":"Transferencia recibida","status":"EXECUTED","providerTransactionId":"txn-789","balanceAfter":5500,"createdAt":"2026-07-06T03:24:43.749012Z"}],"pagination":{"page":1,"limit":10,"total":10}}
+
+
+
+➡️  Prueba 12: GET /transactions con page inválido (error 400 esperado)
+HTTP/1.1 400 Bad Request
+Content-Length: 31
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66b8cdcf-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66b8cdc7-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"error":"invalid page value"}
+
+
+
+➡️  Prueba 13: GET /transactions con limit inválido (error 400 esperado)
+HTTP/1.1 400 Bad Request
+Content-Length: 32
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66ba7d18-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66ba7d15-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"error":"invalid limit value"}
+
+
+
+➡️  Prueba 14: GET /transactions con cuenta sin transacciones (array vacio esperado)
+HTTP/1.1 200 OK
+Content-Length: 57
+Content-Type: application/json
+Date: Mon, 06 Jul 2026 06:03:25 GMT
+Vary: Origin
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 66bc0c7c-7900-11f1-af8e-5a9b4c665d5b
+X-Trace-Id: 66bc0c75-7900-11f1-af8e-5a9b4c665d5b
+X-Xss-Protection: 1; mode=block
+
+{"data":[],"pagination":{"page":1,"limit":10,"total":0}}
+
+
+
+==========================================================
+ ✅ Pruebas cURL finalizadas.
+==========================================================

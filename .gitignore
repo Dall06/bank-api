@@ -1,0 +1,108 @@
+# ================================
+# BRO API - Go Backend
+# ================================
+
+# ============== Binaries ==============
+# Built binaries (root only)
+/gateway
+/crons
+/transactions
+/provider_mock
+/companies
+/gym
+/provisioner
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Binary output directories
+bin/
+dist/
+out/
+
+# ============== Environment & Secrets ==============
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Secrets & credentials
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+credentials/
+
+# ============== Go ==============
+# Go workspace
+go.work
+go.work.sum
+
+# Go vendor (if not checked in)
+# vendor/
+
+# Go build cache
+*.test
+*.out
+cpu.prof
+mem.prof
+*.prof
+
+# Coverage
+coverage.txt
+coverage.html
+coverage.out
+*.coverprofile
+
+# ============== Testing ==============
+test-results/
+*.test.log
+
+# ============== Logs ==============
+*.log
+/logs/
+!/pkg/logs/
+
+# ============== OS Files ==============
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============== IDEs & Editors ==============
+# JetBrains (GoLand)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Vim
+*.swp
+*.swo
+*.swn
+*~
+
+# ============== Database ==============
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# ============== Docker ==============
+docker-compose.override.yml
+
+# ============== Misc ==============
+tmp/
+temp/
+.cache/
+*.bak
+*.backup
+*.tmp
