@@ -1,4 +1,4 @@
-# Spin Backend Challenge — Transaction Execution API
+# Backend Challenge — Transaction Execution API
 
 Este repositorio contiene la solución completa para el reto técnico de procesamiento de transacciones financieras, implementada bajo una arquitectura de microservicios robusta, segura y altamente escalable en Go 1.25.
 
